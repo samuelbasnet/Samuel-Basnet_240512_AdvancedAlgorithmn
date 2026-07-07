@@ -14,12 +14,12 @@ class City:
     lat: float
     lon: float
     population: int
-    distance: float = 0.0  # e.g. distance from origin, used as heap priority
+    distance: float = 0.0
 
 
-# ---------------------------------------------------------------------------
-# Binary Search Tree (unbalanced)
-# ---------------------------------------------------------------------------
+
+
+
 class BSTNode:
     __slots__ = ("key", "value", "left", "right")
 
@@ -49,7 +49,7 @@ class BST:
         elif key > node.key:
             node.right = self._insert(node.right, key, value)
         else:
-            node.value = value  # overwrite
+            node.value = value
         return node
 
     def search(self, key: str) -> Optional[City]:
@@ -81,7 +81,7 @@ class BST:
                 succ = succ.left
             node.key, node.value = succ.key, succ.value
             node.right = self._delete_min(node.right)
-            self._size += 1  # correct double-decrement from recursive call
+            self._size += 1
         return node
 
     def _delete_min(self, node):
@@ -101,9 +101,9 @@ class BST:
         return self._size
 
 
-# ---------------------------------------------------------------------------
-# AVL Tree (self-balancing BST)
-# ---------------------------------------------------------------------------
+
+
+
 class AVLNode:
     __slots__ = ("key", "value", "left", "right", "height")
 
@@ -153,11 +153,11 @@ class AVLTree:
     def _rebalance(self, node: AVLNode) -> AVLNode:
         self._update(node)
         bf = self._balance_factor(node)
-        if bf > 1:  # left heavy
+        if bf > 1:
             if self._balance_factor(node.left) < 0:
                 node.left = self._rotate_left(node.left)
             return self._rotate_right(node)
-        if bf < -1:  # right heavy
+        if bf < -1:
             if self._balance_factor(node.right) > 0:
                 node.right = self._rotate_right(node.right)
             return self._rotate_left(node)
@@ -219,9 +219,9 @@ class AVLTree:
         return self._size
 
 
-# ---------------------------------------------------------------------------
-# Min-Heap (binary heap) used as a priority queue, e.g. "next nearest city"
-# ---------------------------------------------------------------------------
+
+
+
 class MinHeap:
     """Array-based binary min-heap keyed on City.distance."""
 
@@ -274,9 +274,9 @@ class MinHeap:
         return len(self._data)
 
 
-# ---------------------------------------------------------------------------
-# Hash Table with separate chaining
-# ---------------------------------------------------------------------------
+
+
+
 class HashTable:
     """Separate-chaining hash table with dynamic resizing (load factor 0.75)."""
 
