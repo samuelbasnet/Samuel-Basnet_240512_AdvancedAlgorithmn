@@ -218,3 +218,115 @@ class AVLTree:
     def size(self) -> int:
         return self._size
 
+
+# ---------------------------------------------------------------------------
+# Min-Heap (binary heap) used as a priority queue, e.g. "next nearest city"
+# ---------------------------------------------------------------------------
+class MinHeap:
+    """Array-based binary min-heap keyed on City.distance."""
+
+    def __init__(self):
+        self._data: List[City] = []
+
+    def _swap(self, i, j):
+        self._data[i], self._data[j] = self._data[j], self._data[i]
+
+    def push(self, city: City) -> None:
+        self._data.append(city)
+        self._sift_up(len(self._data) - 1)
+
+    def _sift_up(self, i):
+        while i > 0:
+            parent = (i - 1) // 2
+            if self._data[parent].distance <= self._data[i].distance:
+                break
+            self._swap(parent, i)
+            i = parent
+
+    def pop(self) -> Optional[City]:
+        if not self._data:
+            return None
+        top = self._data[0]
+        last = self._data.pop()
+        if self._data:
+            self._data[0] = last
+            self._sift_down(0)
+        return top
+
+    def _sift_down(self, i):
+        n = len(self._data)
+        while True:
+            left, right = 2 * i + 1, 2 * i + 2
+            smallest = i
+            if left < n and self._data[left].distance < self._data[smallest].distance:
+                smallest = left
+            if right < n and self._data[right].distance < self._data[smallest].distance:
+                smallest = right
+            if smallest == i:
+                break
+            self._swap(i, smallest)
+            i = smallest
+
+    def peek(self) -> Optional[City]:
+        return self._data[0] if self._data else None
+
+    def size(self) -> int:
+        return len(self._data)
+
+
+# ---------------------------------------------------------------------------
+# Hash Table with separate chaining
+# ---------------------------------------------------------------------------
+class HashTable:
+    """Separate-chaining hash table with dynamic resizing (load factor 0.75)."""
+
+    def __init__(self, capacity: int = 16):
+        self._capacity = capacity
+        self._buckets: List[List[Any]] = [[] for _ in range(capacity)]
+        self._size = 0
+
+    def _hash(self, key: str) -> int:
+        return hash(key) % self._capacity
+
+    def _resize(self):
+        old_buckets = self._buckets
+        self._capacity *= 2
+        self._buckets = [[] for _ in range(self._capacity)]
+        self._size = 0
+        for bucket in old_buckets:
+            for k, v in bucket:
+                self.insert(k, v)
+
+    def insert(self, key: str, value: City) -> None:
+        if self._size / self._capacity >= 0.75:
+            self._resize()
+        idx = self._hash(key)
+        bucket = self._buckets[idx]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                bucket[i] = (key, value)
+                return
+        bucket.append((key, value))
+        self._size += 1
+
+    def search(self, key: str) -> Optional[City]:
+        idx = self._hash(key)
+        for k, v in self._buckets[idx]:
+            if k == key:
+                return v
+        return None
+
+    def delete(self, key: str) -> None:
+        idx = self._hash(key)
+        bucket = self._buckets[idx]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                bucket.pop(i)
+                self._size -= 1
+                return
+
+    def size(self) -> int:
+        return self._size
+
+    def max_chain_length(self) -> int:
+        return max((len(b) for b in self._buckets), default=0)
