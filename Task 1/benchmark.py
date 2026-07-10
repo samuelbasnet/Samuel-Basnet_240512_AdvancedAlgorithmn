@@ -53,17 +53,6 @@ def bench_tree(tree_cls, cities, search_keys, delete_keys):
     }
 
 
-def bench_hashtable(cities, search_keys, delete_keys):
-    ht = HashTable()
-    t_insert, _ = time_it(lambda: [ht.insert(c.name, c) for c in cities])
-    t_search, _ = time_it(lambda: [ht.search(k) for k in search_keys])
-    t_delete, _ = time_it(lambda: [ht.delete(k) for k in delete_keys])
-    return {
-        "insert": t_insert,
-        "search": t_search,
-        "delete": t_delete,
-        "max_chain": ht.max_chain_length(),
-    }
 
 
 def bench_heap(cities):
